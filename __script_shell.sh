@@ -7,3 +7,5 @@ for f in images/frag/*.ppm; do
     let "numero = numero+1"
     echo "done."
 done
+
+
