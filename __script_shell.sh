@@ -9,3 +9,4 @@ for f in images/frag/*.ppm; do
 done
 
 
+
