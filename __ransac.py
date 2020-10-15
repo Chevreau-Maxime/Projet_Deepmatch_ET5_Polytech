@@ -9,7 +9,8 @@ n_outliers = 5
 f = open("output.txt", "r")
 Lines = f.readlines() 
 for line in Lines:
-	count 0
+	# TODO
+	#count 0
 	line.strip()
 	
 X, y, coef = datasets.make_regression(n_samples=n_samples, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
@@ -17,7 +18,6 @@ X, y, coef = datasets.make_regression(n_samples=n_samples, n_features=1, n_infor
 # np.random.seed(0)
 # X[:n_outliers] = 3 + 0.5 * np.random.normal(size=(n_outliers, 1))
 # y[:n_outliers] = -3 + 10 * np.random.normal(size=n_outliers)
-
 
 # Robustly fit linear model with RANSAC algorithm
 ransac = linear_model.RANSACRegressor()
