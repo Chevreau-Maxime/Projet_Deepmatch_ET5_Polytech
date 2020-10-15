@@ -1,6 +1,5 @@
-#!/bin/bash
 # Partie 1 : creer les fichiers txt
-echo "Starting execution of deepmatch for all images :"
+echo "Starting execution of deepmatch for all images "
 mkdir resultats
 let "numero = 1"
 for f in images/frag/*.ppm; do
