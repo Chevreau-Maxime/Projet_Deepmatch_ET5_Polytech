@@ -35,10 +35,10 @@ def do_ransac_on_data(x1, x2):
 
 
 def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
-    # create 
+    # Create Masks 
     inlier_mask = ransac.inlier_mask_
     outlier_mask = np.logical_not(inlier_mask)
-    # 
+    # Plot
     plt.scatter(x1[inlier_mask], x2[inlier_mask], color='yellowgreen', marker='.', label='Inliers')
     plt.scatter(x1[outlier_mask], x2[outlier_mask], color='gold', marker='.', label='Outliers')
     plt.plot(x1_ransac, x2_ransac, color='cornflowerblue', linewidth=3, label='RANSAC regressor')

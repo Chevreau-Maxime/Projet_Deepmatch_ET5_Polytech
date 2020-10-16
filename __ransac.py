@@ -10,6 +10,7 @@ import __ransac_functions as r_f
 nb_paires = r_f.get_line_number(sys.argv[1])
 nb_infos = 6
 valeurs_txt = r_f.get_data_from_file(sys.argv[1])
+#print("Paired points amount : " + str(nb_paires))
 #print(valeurs_txt)
 
 x1 = np.zeros((nb_paires, 1))
@@ -31,7 +32,6 @@ ransac = tmp[2]
 
 # DISPLAY
 r_f.print_ransac(x1, x2, line_x1, line_y_ransac, ransac)
-
 
 
 
