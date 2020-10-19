@@ -1,6 +1,7 @@
 import numpy as np
 import array as arr
 from matplotlib import pyplot as plt
+import matplotlib.image as mpimg
 from sklearn import linear_model, datasets
 
 def get_line_number(file_name):
@@ -46,3 +47,42 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     plt.xlabel("Input")
     plt.ylabel("Response")
     #plt.show()
+
+
+
+
+def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
+    img_frag = mpimg.imread(frag) #-> recup l'image en var
+    img_frag = img_frag[:,:,:3] #-> on enleve l'alpha si present
+    img_fresque = mpimg.imread(fresque)
+
+    h,w = dimensions(img_frag)
+    for i in range(w):
+        progress_bar(i/w, 'Copying image')
+        for j in range(h):
+            r = img_frag[j, i, 0]
+            g = img_frag[j, i, 1]
+            b = img_frag[j, i, 2]
+            pixel_set(img_fresque, i+x, j+y, r, g, b)   
+    plt.imshow(img_fresque)
+    plt.show()
+    return
+
+def dimensions(image):
+    w = int(image[0].size / 3)
+    h = int(image.size / (3 * w))
+    return h,w
+
+    
+def progress_bar(percentage, text='', size=40):
+    a = int(size*percentage)
+    b = size - a
+    print(' ' + text + ' ->  [' + a*('+') + b*('-') + ']' + 10*' ', end='\r')
+    return
+
+    
+def pixel_set(image, x, y, r=1, g=1, b=1):
+    h,w = dimensions(image)
+    if ((x < w) & (y < h)):
+        image[y,x] = [r, g, b]
+
