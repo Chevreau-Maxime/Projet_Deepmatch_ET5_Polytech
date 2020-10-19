@@ -45,4 +45,4 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     plt.legend(loc='lower right')
     plt.xlabel("Input")
     plt.ylabel("Response")
-    plt.show()
+    #plt.show()

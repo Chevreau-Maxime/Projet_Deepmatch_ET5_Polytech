@@ -26,13 +26,21 @@ for i in range(nb_paires):
 
 # GET RANSAC DATA
 tmp = r_f.do_ransac_on_data(x1, x2)
-line_x1 = tmp[0]
-line_y_ransac = tmp[1]
-ransac = tmp[2]
+x1_ransac = tmp[0]
+x2_ransac = tmp[1]
+x_data_ransac = tmp[2]
+
+tmp = r_f.do_ransac_on_data(y1, y2)
+y1_ransac = tmp[0]
+y2_ransac = tmp[1]
+y_data_ransac = tmp[2]
 
 # DISPLAY
-r_f.print_ransac(x1, x2, line_x1, line_y_ransac, ransac)
-
+plt.subplot(121)
+r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)
+plt.subplot(122)
+r_f.print_ransac(y1, y2, y1_ransac, y2_ransac, y_data_ransac)
+plt.show()
 
 
 
