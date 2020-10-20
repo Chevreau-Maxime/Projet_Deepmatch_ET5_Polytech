@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 import array as arr
 from matplotlib import pyplot as plt
@@ -18,7 +17,7 @@ y1 = np.zeros((nb_paires, 1))
 x2 = np.zeros((nb_paires, 1))
 y2 = np.zeros((nb_paires, 1))
 for i in range(nb_paires):
-	x1[i] = valeurs_txt[i][0]
+	x1[i] = [i][0]
 	y1[i] = valeurs_txt[i][1]
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
