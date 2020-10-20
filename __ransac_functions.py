@@ -24,6 +24,13 @@ def get_data_from_file(file_name):
         idx_ligne += 1
     return valeurs
 
+def get_frag_name(txt_name):
+    tmp = (txt_name.split('/'))[1]
+    tmp = (tmp.split('.'))[0]
+    tmp = ((4 - len(tmp))*'0' + tmp) 
+    tmp = "images/frag/frag_eroded_"+tmp+".ppm"
+    print(tmp)
+    return tmp
 
 def do_ransac_on_data(x1, x2):
     # Apply ransac algorithm
@@ -69,6 +76,7 @@ def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
                 img_fresque2[j+y, i+x] = [r,g,b]
             #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
     plt.imshow(img_fresque2)
+    plt.savefig("images/fresque_new.png")
     plt.show()
     return
 

@@ -8,10 +8,11 @@ import __ransac_homography as r_h
 
 
 # READ DATA FROM TXT FILE IN PARAM
-param = sys.argv[1] #param = "resultats/1.txt"
-nb_paires = r_f.get_line_number(param)
+param1 = sys.argv[1] #param = "resultats/1.txt"
+#param2 = sys.argv[2] #"images/frag/frag_eroded_0001.ppm"
+nb_paires = r_f.get_line_number(param1)
 nb_infos = 6
-valeurs_txt = r_f.get_data_from_file(param)
+valeurs_txt = r_f.get_data_from_file(param1)
 #print("Paired points amount : " + str(nb_paires))
 #print(valeurs_txt)
 
@@ -43,7 +44,8 @@ translation_x = 200
 translation_y = 350
 
 # COPY FRAGMENT INTO (test)
-r_f.copy_image_into_image("images/frag/frag_eroded_0001.ppm", "images/fresque_copy.ppm", translation_x, translation_y)
+frag_name = r_f.get_frag_name(param1)
+r_f.copy_image_into_image(frag_name, "images/fresque_copy.ppm", translation_x, translation_y)
 
 # DISPLAY RANSAC PAIRS
 plt.subplot(121)
