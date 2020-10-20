@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import array as arr
 from matplotlib import pyplot as plt
