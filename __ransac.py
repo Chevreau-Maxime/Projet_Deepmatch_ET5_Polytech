@@ -4,12 +4,14 @@ import array as arr
 from matplotlib import pyplot as plt
 from sklearn import linear_model, datasets
 import __ransac_functions as r_f
+import __ransac_homography as r_h
 
 
 # READ DATA FROM TXT FILE IN PARAM
-nb_paires = r_f.get_line_number(sys.argv[1])
+param = sys.argv[1] #param = "resultats/1.txt"
+nb_paires = r_f.get_line_number(param)
 nb_infos = 6
-valeurs_txt = r_f.get_data_from_file(sys.argv[1])
+valeurs_txt = r_f.get_data_from_file(param)
 #print("Paired points amount : " + str(nb_paires))
 #print(valeurs_txt)
 
@@ -37,8 +39,8 @@ y2_ransac = tmp[1]
 y_data_ransac = tmp[2]
 
 # CALCULATE TRANSFORMATION FOR FRAGMENT
-translation_x = 0
-translation_y = 0
+translation_x = 200
+translation_y = 350
 
 # COPY FRAGMENT INTO (test)
 r_f.copy_image_into_image("images/frag/frag_eroded_0001.ppm", "images/fresque_copy.ppm", translation_x, translation_y)

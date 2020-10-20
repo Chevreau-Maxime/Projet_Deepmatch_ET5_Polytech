@@ -53,9 +53,11 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
 
 def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
     img_frag = mpimg.imread(frag) #-> recup l'image en var
-    img_frag = img_frag[:,:,:3] #-> on enleve l'alpha si present
+    img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
     img_fresque = mpimg.imread(fresque)
+    img_fresque2 = img_fresque[:,:,:3].copy()
 
+    #filtre_sur_fresque(img_fresque2, 30, 10, 0)
     h,w = dimensions(img_frag)
     for i in range(w):
         progress_bar(i/w, 'Copying image')
@@ -63,10 +65,21 @@ def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
             r = img_frag[j, i, 0]
             g = img_frag[j, i, 1]
             b = img_frag[j, i, 2]
-            pixel_set(img_fresque, i+x, j+y, r, g, b)   
-    plt.imshow(img_fresque)
+            if (not((r == 0) & (g == 0) & (b == 0))):
+                img_fresque2[j+y, i+x] = [r,g,b]
+            #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
+    plt.imshow(img_fresque2)
     plt.show()
     return
+
+def filtre_sur_fresque(image, r, g, b):
+    h,w = dimensions(image)
+    for i in range(w):
+        for j in range(h):
+            ri = image[j, i, 0]
+            gi = image[j, i, 1]
+            bi = image[j, i, 2]
+            image[j, i] = [ri+r, gi+g, bi+b]
 
 def dimensions(image):
     w = int(image[0].size / 3)
