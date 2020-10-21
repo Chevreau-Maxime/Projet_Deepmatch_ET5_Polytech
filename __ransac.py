@@ -7,9 +7,10 @@ import __ransac_functions as r_f
 import __ransac_homography as r_h
 
 
+
 # READ DATA FROM TXT FILE IN PARAM
-param1 = sys.argv[1] #param = "resultats/1.txt"
-#param2 = sys.argv[2] #"images/frag/frag_eroded_0001.ppm"
+param1 = sys.argv[1] 
+#param1 = "resultats/1.txt"
 nb_paires = r_f.get_line_number(param1)
 nb_infos = 6
 valeurs_txt = r_f.get_data_from_file(param1)
@@ -26,7 +27,6 @@ for i in range(nb_paires):
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
 
-
 # GET RANSAC DATA
 # -> x
 tmp = r_f.do_ransac_on_data(x1, x2)
@@ -40,19 +40,20 @@ y2_ransac = tmp[1]
 y_data_ransac = tmp[2]
 
 # CALCULATE TRANSFORMATION FOR FRAGMENT
-translation_x = 200
-translation_y = 350
-
-# COPY FRAGMENT INTO (test)
+#trans_x_slope, trans_x_inter = r_h.get_transformation(x1_ransac, x2_ransac, x_data_ransac)
+#trans_y_slope, trans_y_inter = r_h.get_transformation(y1_ransac, y2_ransac, y_data_ransac)
+#transformation = [trans_x_slope, trans_x_inter, trans_y_slope, trans_y_inter]
+dx, dy, da = r_h.get_transformation(x1, x2, y1, y2, x_data_ransac, y_data_ransac)
+# COPY FRAGMENT INTO
 frag_name = r_f.get_frag_name(param1)
-r_f.copy_image_into_image(frag_name, "images/fresque_copy.ppm", translation_x, translation_y)
+r_f.copy_image_into_image(frag_name, "images/fresque.ppm", dx, dy, da)
 
 # DISPLAY RANSAC PAIRS
 plt.subplot(121)
 r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)
 plt.subplot(122)
 r_f.print_ransac(y1, y2, y1_ransac, y2_ransac, y_data_ransac)
-plt.show()
+#plt.show()
 
 
 

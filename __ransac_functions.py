@@ -47,24 +47,20 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     inlier_mask = ransac.inlier_mask_
     outlier_mask = np.logical_not(inlier_mask)
     # Plot
-    plt.scatter(x1[inlier_mask], x2[inlier_mask], color='yellowgreen', marker='.', label='Inliers')
-    plt.scatter(x1[outlier_mask], x2[outlier_mask], color='gold', marker='.', label='Outliers')
-    plt.plot(x1_ransac, x2_ransac, color='cornflowerblue', linewidth=3, label='RANSAC regressor')
+    plt.scatter(x1[inlier_mask], x2[inlier_mask], color='green', marker='+', label='Inliers')
+    plt.scatter(x1[outlier_mask], x2[outlier_mask], color='red', marker='x', label='Outliers')
+    plt.plot(x1_ransac, x2_ransac, color='blue', linewidth=1, label='RANSAC regressor')
     plt.legend(loc='lower right')
     plt.xlabel("Input")
     plt.ylabel("Response")
-    #plt.show()
 
 
-
-
-def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
+def copy_image_into_image(frag, fresque, dx, dy, da):
     img_frag = mpimg.imread(frag) #-> recup l'image en var
     img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
     img_fresque = mpimg.imread(fresque)
     img_fresque2 = img_fresque[:,:,:3].copy()
-
-    #filtre_sur_fresque(img_fresque2, 30, 10, 0)
+    
     h,w = dimensions(img_frag)
     for i in range(w):
         progress_bar(i/w, 'Copying image')
@@ -73,7 +69,8 @@ def copy_image_into_image(frag, fresque, x=0, y=0, angle=0):
             g = img_frag[j, i, 1]
             b = img_frag[j, i, 2]
             if (not((r == 0) & (g == 0) & (b == 0))):
-                img_fresque2[j+y, i+x] = [r,g,b]
+                #if((i+dx < w) & (j+dy < h)):
+                img_fresque2[j+dy, i+dx] = [r,g,b]
             #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
     plt.imshow(img_fresque2)
     plt.savefig("images/fresque_new.png")
