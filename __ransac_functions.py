@@ -1,9 +1,9 @@
-from math import *
+from math import asin, acos
 import numpy as np
 import array as arr
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
-from sklearn import linear_model, datasets
+from sklearn import linear_model, multioutput
 import cv2 as cv
 
 
@@ -19,7 +19,6 @@ def homography(x1, x2, y1, y2):
     print(teta2)
     print(teta3)
     print(teta4)
-
     print(h)
     return h
 
@@ -51,9 +50,27 @@ def get_frag_name(txt_name):
     print(tmp)
     return tmp
 
+def execute_ransac(x1, x2, y1, y2):
+    # Extract
+    frag_points  = np.empty((len(x1), 2))
+    fresq_points = np.empty_like(frag_points)
+    for i in range(len(x1)):
+        frag_points[i, 0] = x1[i]
+        frag_points[i, 1] = y1[i]
+        fresq_points[i, 0] = x2[i]
+        fresq_points[i, 1] = y2[i]
+    plt.plot(fresq_points[:, 0], fresq_points[:, 1], '+', linewidth=0) 
+    plt.show()
+    # Ransac
+    ransac = linear_model.RANSACRegressor(None, 2, None, None, None, 100, np.inf, np.inf, np.inf, 0.99, 'absolute_loss')
+    ransac.fit(frag_points, fresq_points)
+    # Print it
+    plt.plot(fresq_points[0], fresq_points[1])
+    return ransac.estimator_
+
 def do_ransac_on_data(x1, x2):
     # Apply ransac algorithm
-    ransac = linear_model.RANSACRegressor()
+    ransac = linear_model.RANSACRegressor(None, 2, None, None, None, 100, np.inf, np.inf, np.inf, 0.99, 'absolute_loss')
     ransac.fit(x1, x2)
     # Predict data of estimated models
     x1_ransac = np.arange(x1.min(), x1.max())[:, np.newaxis]
