@@ -1,8 +1,27 @@
+from math import *
 import numpy as np
 import array as arr
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from sklearn import linear_model, datasets
+import cv2 as cv
+
+
+def homography(x1, x2, y1, y2):
+    points1 = np.array([x1,y1]).T
+    points2 = np.array([x2,y2]).T
+    h, mask = cv.findHomography(points1,points2,cv.RANSAC)
+    teta1 = acos(h[0,0])
+    teta2 = asin(h[0,1])
+    teta3 = asin(-h[1,0])
+    teta4 = acos(h[1,1])
+    print(teta1)
+    print(teta2)
+    print(teta3)
+    print(teta4)
+
+    print(h)
+    return h
 
 def get_line_number(file_name):
     with open(file_name) as f:
@@ -41,7 +60,6 @@ def do_ransac_on_data(x1, x2):
     x2_ransac = ransac.predict(x1_ransac)
     return x1_ransac, x2_ransac, ransac
 
-
 def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     # Create Masks 
     inlier_mask = ransac.inlier_mask_
@@ -55,7 +73,7 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     plt.ylabel("Response")
 
 
-def copy_image_into_image(frag, fresque, dx, dy, da):
+def copy_image_into_image(frag, fresque, dx, dy, da, H):
     img_frag = mpimg.imread(frag) #-> recup l'image en var
     img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
     img_fresque = mpimg.imread(fresque)
@@ -65,12 +83,15 @@ def copy_image_into_image(frag, fresque, dx, dy, da):
     for i in range(w):
         progress_bar(i/w, 'Copying image')
         for j in range(h):
+            newx = int(H[0,2] + (H[0,0]*i + H[0,1]*j))
+            newy = int(H[1,2] + (H[1,0]*i + H[1,1]*j))
+            
             r = img_frag[j, i, 0]
             g = img_frag[j, i, 1]
             b = img_frag[j, i, 2]
             if (not((r == 0) & (g == 0) & (b == 0))):
                 #if((i+dx < w) & (j+dy < h)):
-                img_fresque2[j+dy, i+dx] = [r,g,b]
+                img_fresque2[newy+dy, newx+dx] = [r,g,b]
             #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
     plt.imshow(img_fresque2)
     plt.savefig("images/fresque_new.png")

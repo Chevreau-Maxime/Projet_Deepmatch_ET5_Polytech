@@ -27,6 +27,9 @@ for i in range(nb_paires):
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
 
+H = r_f.homography(x1, x2, y1, y2)
+
+"""
 # GET RANSAC DATA
 # -> x
 tmp = r_f.do_ransac_on_data(x1, x2)
@@ -43,16 +46,22 @@ y_data_ransac = tmp[2]
 #trans_x_slope, trans_x_inter = r_h.get_transformation(x1_ransac, x2_ransac, x_data_ransac)
 #trans_y_slope, trans_y_inter = r_h.get_transformation(y1_ransac, y2_ransac, y_data_ransac)
 #transformation = [trans_x_slope, trans_x_inter, trans_y_slope, trans_y_inter]
-dx, dy, da = r_h.get_transformation(x1, x2, y1, y2, x_data_ransac, y_data_ransac)
+#dx, dy, da = r_h.get_transformation(x1, x2, y1, y2, x_data_ransac, y_data_ransac)
+"""
+
+dx = 0
+dy = 0
+da = 0
 # COPY FRAGMENT INTO
 frag_name = r_f.get_frag_name(param1)
-r_f.copy_image_into_image(frag_name, "images/fresque.ppm", dx, dy, da)
+r_f.copy_image_into_image(frag_name, "images/fresque.ppm", dx, dy, da, H)
+
 
 # DISPLAY RANSAC PAIRS
-plt.subplot(121)
-r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)
-plt.subplot(122)
-r_f.print_ransac(y1, y2, y1_ransac, y2_ransac, y_data_ransac)
+#plt.subplot(121)
+#r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)
+#plt.subplot(122)
+#r_f.print_ransac(y1, y2, y1_ransac, y2_ransac, y_data_ransac)
 #plt.show()
 
 

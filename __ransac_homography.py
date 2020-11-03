@@ -7,7 +7,7 @@ from sklearn import linear_model, datasets
 
 def scan_through(x, y):
     precision = 100
-    amplitude = (max(x)-min(x))/2
+    amplitude = (max(x)-min(x))/4
     current_consensus = 0
     max_consensus = 0
     max_index = 0
