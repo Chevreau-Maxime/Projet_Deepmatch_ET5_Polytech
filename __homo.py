@@ -31,16 +31,22 @@ nb_infos = 6
 valeurs_txt = rf.get_data_from_file(param)
 #print("Paired points amount : " + str(nb_paires))
 #print(valeurs_txt)
-
-x1 = np.zeros((nb_paires, 1))
-y1 = np.zeros((nb_paires, 1))
-x2 = np.zeros((nb_paires, 1))
-y2 = np.zeros((nb_paires, 1))
+nb_vrai_match = 0
 for i in range(nb_paires):
-	x1[i] = valeurs_txt[i][0]
-	y1[i] = valeurs_txt[i][1]
-	x2[i] = valeurs_txt[i][2]
-	y2[i] = valeurs_txt[i][3]
+    if  valeurs_txt[i][5]<1 :
+        nb_vrai_match = nb_vrai_match + 1 #compte le nombre de vrai match pour ne pas prendre des outliers
+
+x1 = np.zeros((nb_vrai_match, 1))
+y1 = np.zeros((nb_vrai_match, 1))
+x2 = np.zeros((nb_vrai_match, 1))
+y2 = np.zeros((nb_vrai_match, 1))
+
+for i in range(nb_paires):
+    if valeurs_txt[i][5]<1 : #recopie que des match avec un score <1
+	    x1[i] = valeurs_txt[i][0]
+	    y1[i] = valeurs_txt[i][1]
+	    x2[i] = valeurs_txt[i][2]
+	    y2[i] = valeurs_txt[i][3]
 points1 = np.array([x1,y1]).T
 points2 = np.array([x2,y2]).T
 h, mask = cv.findHomography(points1,points2,cv.RANSAC)
