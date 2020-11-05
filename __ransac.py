@@ -8,7 +8,9 @@ import __ransac_homography as r_h
 
 
 
-# READ DATA FROM TXT FILE IN PARAM
+#######################################################
+#  READ DATA FROM TXT FILE IN PARAM
+#######################################################
 param1 = sys.argv[1] 
 #param1 = "resultats/1.txt"
 nb_paires = r_f.get_line_number(param1)
@@ -27,7 +29,19 @@ for i in range(nb_paires):
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
 
-H = r_f.homography(x1, x2, y1, y2)
+
+
+#######################################################
+#  METHOD 1 : HOMOGRAPHY
+####################################################### 
+#H = r_f.homography(x1, x2, y1, y2)
+
+
+#######################################################
+#  METHOD 2 : RANSAC
+#######################################################
+H = r_f.execute_ransac(x1, x2, y1, y2)
+print(H)
 
 """
 # GET RANSAC DATA
