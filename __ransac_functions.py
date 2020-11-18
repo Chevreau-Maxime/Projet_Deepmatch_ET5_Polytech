@@ -90,7 +90,12 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     plt.ylabel("Response")
 
 
+# Voir quel H2 il faut extraire de l'estimator, .coef_ ?
+# Ajouter H2[0,2] et H2[1,2] si la matrice est 3x2
+# Encore voir pour essayer de bien copier l'image
 def copy_image_into_image(frag, fresque, dx, dy, da, H):
+    H2 = H.get_params(True) 
+    print(H2)
     img_frag = mpimg.imread(frag) #-> recup l'image en var
     img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
     img_fresque = mpimg.imread(fresque)
@@ -100,8 +105,8 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
     for i in range(w):
         progress_bar(i/w, 'Copying image')
         for j in range(h):
-            newx = int(H[0,2] + (H[0,0]*i + H[0,1]*j))
-            newy = int(H[1,2] + (H[1,0]*i + H[1,1]*j))
+            newx = int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
+            newy = int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]
             
             r = img_frag[j, i, 0]
             g = img_frag[j, i, 1]

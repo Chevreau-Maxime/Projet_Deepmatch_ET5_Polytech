@@ -7,10 +7,11 @@ import __ransac_functions as r_f
 import __ransac_homography as r_h
 
 
-
+print("BEGIN TREATMENT")
 #######################################################
 #  READ DATA FROM TXT FILE IN PARAM
 #######################################################
+print("READ DATA")
 param1 = sys.argv[1] 
 #param1 = "resultats/1.txt"
 nb_paires = r_f.get_line_number(param1)
@@ -40,6 +41,7 @@ for i in range(nb_paires):
 #######################################################
 #  METHOD 2 : RANSAC
 #######################################################
+print("CALCULATE RANSAC")
 H = r_f.execute_ransac(x1, x2, y1, y2)
 print(H)
 
@@ -63,6 +65,7 @@ y_data_ransac = tmp[2]
 #dx, dy, da = r_h.get_transformation(x1, x2, y1, y2, x_data_ransac, y_data_ransac)
 """
 
+print("COPY FRAGMENT")
 dx = 0
 dy = 0
 da = 0
