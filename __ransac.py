@@ -43,7 +43,7 @@ for i in range(nb_paires):
 #######################################################
 print("CALCULATE RANSAC")
 H = r_f.execute_ransac(x1, x2, y1, y2)
-print(H)
+#print(H)
 
 """
 # GET RANSAC DATA

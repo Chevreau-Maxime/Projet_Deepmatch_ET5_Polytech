@@ -9,8 +9,8 @@ print("Begin Initialization")
 fresque_base = mpimg.imread("images/fresque.ppm")
 fresque_base = fresque_base[:,:,:3].copy()
 
-plt.imshow(fresque_base)
-plt.savefig("images/fresque_base.png")
+#plt.imshow(fresque_base)
+#plt.savefig("images/fresque_base.png")
 
 
 w = int(fresque_base[0].size / 3)
@@ -18,8 +18,8 @@ h = int(fresque_base.size / (3 * w))
 for i in range(w):
     for j in range(h):
         fresque_base[j, i] = [0,0,0]
-plt.imshow(fresque_base)
-#fresque_base.save("images/fresque_empty.png")
+#plt.imshow(fresque_base)
+fresque_base.save("images/fresque_empty.png")
 
 print("End Initialization")
 

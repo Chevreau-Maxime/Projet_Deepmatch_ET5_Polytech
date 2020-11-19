@@ -47,7 +47,7 @@ def get_frag_name(txt_name):
     tmp = (tmp.split('.'))[0]
     tmp = ((4 - len(tmp))*'0' + tmp) 
     tmp = "images/frag/frag_eroded_"+tmp+".ppm"
-    print(tmp)
+    #print(tmp)
     return tmp
 
 def execute_ransac(x1, x2, y1, y2):
@@ -59,13 +59,13 @@ def execute_ransac(x1, x2, y1, y2):
         frag_points[i, 1] = y1[i]
         fresq_points[i, 0] = x2[i]
         fresq_points[i, 1] = y2[i]
-    plt.plot(fresq_points[:, 0], fresq_points[:, 1], '+', linewidth=0) 
-    plt.show()
     # Ransac
     ransac = linear_model.RANSACRegressor(None, 2, None, None, None, 100, np.inf, np.inf, np.inf, 0.99, 'absolute_loss')
     ransac.fit(frag_points, fresq_points)
     # Print it
-    plt.plot(fresq_points[0], fresq_points[1])
+    #plt.plot(fresq_points[:, 0], fresq_points[:, 1], '+', linewidth=0) 
+    #plt.show()
+    #plt.plot(fresq_points[0], fresq_points[1])
     return ransac.estimator_
 
 def do_ransac_on_data(x1, x2):
@@ -91,11 +91,13 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
 
 
 # Voir quel H2 il faut extraire de l'estimator, .coef_ ?
-# Ajouter H2[0,2] et H2[1,2] si la matrice est 3x2
-# Encore voir pour essayer de bien copier l'image
+# Ajouter H2[0,2] et H2[1,2] si la matrice est 3x2              fait
+# Encore voir pour essayer de bien copier l'image               en cours
+# 
 def copy_image_into_image(frag, fresque, dx, dy, da, H):
-    H2 = H.get_params(True) 
-    print(H2)
+    #H2 = H.coef_
+    #print(H2) 
+    offset = 50
     img_frag = mpimg.imread(frag) #-> recup l'image en var
     img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
     img_fresque = mpimg.imread(fresque)
@@ -105,8 +107,20 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
     for i in range(w):
         progress_bar(i/w, 'Copying image')
         for j in range(h):
-            newx = int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
-            newy = int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]
+
+            point = np.empty((1,2))
+            point[0,0] = i
+            point[0,1] = j
+
+            
+            point2 = np.empty_like(point)
+            point2 = H.predict(point)
+            #print("Point 1 : ")
+            #print(point)
+            #print("Point 2 : ")
+            #print(point2)
+            newx = int(point2[0,0])#int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
+            newy = int(point2[0,1])#int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]
             
             r = img_frag[j, i, 0]
             g = img_frag[j, i, 1]
@@ -114,6 +128,12 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
             if (not((r == 0) & (g == 0) & (b == 0))):
                 #if((i+dx < w) & (j+dy < h)):
                 img_fresque2[newy+dy, newx+dx] = [r,g,b]
+            else:
+                for c in img_fresque2[newy+dy, newx+dx]:
+                    c = min(255, c+offset)
+                
+                
+                #[newy+dy, newx+dx] = [min(255,r+offset),min(255,g+offset),min(255,b+offset)]
             #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
     plt.imshow(img_fresque2)
     plt.savefig("images/fresque_new.png")
