@@ -1,6 +1,7 @@
 from math import asin, acos
 import numpy as np
 import array as arr
+from PIL import Image
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from sklearn import linear_model, multioutput
@@ -90,54 +91,49 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     plt.ylabel("Response")
 
 
-# Voir quel H2 il faut extraire de l'estimator, .coef_ ?
-# Ajouter H2[0,2] et H2[1,2] si la matrice est 3x2              fait
-# Encore voir pour essayer de bien copier l'image               en cours
-# 
 def copy_image_into_image(frag, fresque, dx, dy, da, H):
-    #H2 = H.coef_
-    #print(H2) 
-    offset = 50
-    img_frag = mpimg.imread(frag) #-> recup l'image en var
-    img_frag = img_frag[:,:,:3].copy() #-> on enleve l'alpha si present
+    ##### INIT
+    img_frag = mpimg.imread(frag)
+    img_frag = img_frag[:,:,:3].copy() # pour enlever l'alpha channel
     img_fresque = mpimg.imread(fresque)
     img_fresque2 = img_fresque[:,:,:3].copy()
-    
+    np_fresque = np.zeros_like(img_fresque2)
+    hf,wf = dimensions(img_fresque2)
+    for i in range(wf):
+        for j in range(hf):
+            np_fresque[j,i] = img_fresque2[j,i]
+
+    ##### MODIFY
     h,w = dimensions(img_frag)
     for i in range(w):
         progress_bar(i/w, 'Copying image')
         for j in range(h):
-
             point = np.empty((1,2))
             point[0,0] = i
             point[0,1] = j
-
-            
             point2 = np.empty_like(point)
             point2 = H.predict(point)
-            #print("Point 1 : ")
-            #print(point)
-            #print("Point 2 : ")
-            #print(point2)
-            newx = int(point2[0,0])#int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
-            newy = int(point2[0,1])#int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]
+            newx = int(point2[0,0]) #int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
+            newy = int(point2[0,1]) #int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]
             
             r = img_frag[j, i, 0]
             g = img_frag[j, i, 1]
             b = img_frag[j, i, 2]
             if (not((r == 0) & (g == 0) & (b == 0))):
                 #if((i+dx < w) & (j+dy < h)):
-                img_fresque2[newy+dy, newx+dx] = [r,g,b]
-            else:
-                for c in img_fresque2[newy+dy, newx+dx]:
-                    c = min(255, c+offset)
-                
-                
-                #[newy+dy, newx+dx] = [min(255,r+offset),min(255,g+offset),min(255,b+offset)]
-            #pixel_set(img_fresque2, i+x, j+y, r, g, b)   
-    plt.imshow(img_fresque2)
-    plt.savefig("images/fresque_new.png")
-    plt.show()
+                #img_fresque2[newy+dy, newx+dx] = [r,g,b]
+                np_fresque[newy+dy, newx+dx] = [r,g,b]
+                #print([r,g,b])
+    
+    ##### SAVE
+    print(np_fresque)
+    print("Saving image : " + fresque)
+    img = Image.fromarray(np_fresque, 'RGB')
+    img.save(fresque)
+    #print("done save.")
+    #plt.imshow(img_fresque2)
+    #plt.savefig("images/fresque_new.png")
+    #plt.show()
     return
 
 def filtre_sur_fresque(image, r, g, b):

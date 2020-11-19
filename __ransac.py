@@ -71,8 +71,8 @@ dy = 0
 da = 0
 # COPY FRAGMENT INTO
 frag_name = r_f.get_frag_name(param1)
-r_f.copy_image_into_image(frag_name, "images/fresque.ppm", dx, dy, da, H)
-
+r_f.copy_image_into_image(frag_name, "images/fresque_copy.png", dx, dy, da, H)
+r_f.copy_image_into_image(frag_name, "images/fresque_empty.png", dx, dy, da, H)
 
 # DISPLAY RANSAC PAIRS
 #plt.subplot(121)
