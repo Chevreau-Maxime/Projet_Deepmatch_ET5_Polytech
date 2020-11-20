@@ -94,11 +94,18 @@ def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
 
 def copy_image_into_image(frag, fresque, dx, dy, da, H):
     ##### INIT
+    """
     img_frag = mpimg.imread(frag)
     img_frag = img_frag[:,:,:3].copy() # pour enlever l'alpha channel
     img_fresque = mpimg.imread(fresque)
     img_fresque2 = img_fresque[:,:,:3].copy()
+    """
 
+    img_frag = np.asarray(Image.open(frag))
+    img_fresque = np.asarray(Image.open(fresque))
+    img_fresque2 = img_fresque.copy()
+    #print(img_fresque2.flags)
+    
     """
     np_fresque = np.zeros_like(img_fresque2)
     hf,wf = dimensions(img_fresque2)
@@ -107,6 +114,7 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
             np_fresque[j,i] = img_fresque2[j,i]
     """
     ##### MODIFY
+    hf, wf = dimensions(img_fresque2)
     h,w = dimensions(img_frag)
     for i in range(w):
         progress_bar(i/w, 'Copying image')
@@ -127,21 +135,22 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
                     #print("replacing pixel :")
                     #print(img_fresque2[newy+dy, newx+dx])
                     #print("by -> ", [r,g,b])
-                #if((i+dx < w) & (j+dy < h)):
-                img_fresque2[newy+dy, newx+dx] = [r,g,b]
+                if((newy+dy < hf) & (newx+dx < wf)):
+                    img_fresque2[newy+dy, newx+dx] = [r,g,b]
                 #np_fresque[newy+dy, newx+dx] = [r,g,b]
                 #print("replacing pixel at ", newy+dy, ", ", newx+dx)
                 #print([r,g,b])
     
     ##### SAVE
     #print(img_fresque2)
-    
+    #img = Image.fromarray(np.uint8(img_fresque2))
+
     plt.imshow(img_fresque2)
     plt.savefig("images/fresque_new.png")
     print("Saving image : " + fresque)
-    img = Image.fromarray(img_fresque2, 'RGB')
+    img = Image.fromarray(np.uint8(img_fresque2))
     img.save(fresque)
-    print("done save.")
+    #print("done save.")
     return
 
 def convert_image(source, destination):

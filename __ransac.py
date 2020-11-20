@@ -72,7 +72,7 @@ da = 0
 frag_ppm = r_f.get_frag_name(param1)
 frag_png = "images/frag_tmp.png"
 r_f.convert_image(frag_ppm, frag_png)
-r_f.copy_image_into_image(frag_ppm, "images/fresque_copy.png", dx, dy, da, H)
+r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", dx, dy, da, H)
 r_f.copy_image_into_image(frag_png, "images/fresque_empty.png", dx, dy, da, H)
 
 # DISPLAY RANSAC PAIRS
