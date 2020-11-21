@@ -185,15 +185,21 @@ def dimensions(image):
 
     
 def progress_bar(percentage, text='', size=40):
+    if(size == 0):
+        print(' ' + text + ' -> [' + str(int(percentage*100)) + '%]', end='\r')
+        return
     a = int(size*percentage)
     b = size - a
     print(' ' + text + ' ->  [' + a*('+') + b*('-') + ']' + 10*' ', end='\r')
     return
 
-"""    
+
 def pixel_set(image, x, y, r=1, g=1, b=1):
     h,w = dimensions(image)
-    if ((x < w) & (y < h)):
-        image[y,x] = [r, g, b]
-
-"""
+    if ((x <= w) & (y <= h)):
+        image[y,x,0] = r
+        image[y,x,1] = g
+        image[y,x,2] = b        
+        return True
+    else:
+        return False

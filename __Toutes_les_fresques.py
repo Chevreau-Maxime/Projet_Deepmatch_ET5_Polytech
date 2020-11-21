@@ -9,12 +9,8 @@ import matplotlib.image as mpimg
 from sklearn import linear_model, multioutput
 from __create_fragments import create_fragments
 
-print("Loop through all images : ")
-
-#fullpath = (os.getcwd())
-root_dir = "./autres_fresques"
-#print(os.listdir(root_dir))
+root_dir = "autres_fresques/"
 for folder in os.listdir(root_dir):
-    #os.chdir(fullpath + "\\" + folder)
-    os.system("cd " + folder)
-    create_fragments()
+    path = root_dir + str(folder) + "/"
+    print(path)
+    create_fragments(path)
