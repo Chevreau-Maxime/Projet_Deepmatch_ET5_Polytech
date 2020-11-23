@@ -14,3 +14,4 @@ for folder in os.listdir(root_dir):
     path = root_dir + str(folder) + "/"
     print(path)
     create_fragments(path)
+    break

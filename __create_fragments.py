@@ -17,22 +17,79 @@ def create_fragments(folder):
     fresque = open_file(folder + "fresque.png")
     fresque = fragment_file(fresque, 100)
     save_file(fresque, folder + "fresque_fragmentee.png")
-    save_fragments(fresque, folder)
+    fresque = save_fragments(fresque, folder)
+    save_file(fresque, folder + "fresque_videe.png")
     return
+
+
+
+
+
 
 
 def save_fragments(F, folder):
     h,w = dimensions(F)
     done = False
     while(not(done)):
-        visited = np.zeros((1,2))
-        neighbours = np.zeros((1,2))
-        ### Get starting pixel
-        done = True
-        # TODO Implement A* type algorithm to retrieve all pixels in zones
-        # np.append (visited, [a,b])
+        start = [-1,-1]
+        for x in range(w):
+            for y in range(h):
+                if (F[y,x].any()):
+                    start = [x,y]
+        if (start[0] == -1):
+            done = True
+        else:
+            save_single_fragment(F, start[0], start[1])
+            done = True #DELETE THIS LINE LATER
+    return F
+       
+def save_single_fragment(F, startx, starty):
+    h,w = dimensions(F)
+    visit = np.zeros((2))
+    visit[0] = startx
+    visit[1] = starty
+    idx = 0
+    count = 0
+    done = False
+    while(not(done)):
+        ### Treat visit[idx]
+        currentx = int(visit[idx + 0])
+        currenty = int(visit[idx + 1])
+        print("current pixel : ", [currentx, currenty])
+        count = count + 1
+        pixel_set(F, currentx, currenty, 0,0,0)
+        ### Check neighbours of visit[idx]
+        for x in range(-1, 2, 1):
+            for y in range(-1, 2, 1):
+                newx = int(currentx+x)
+                newy = int(currenty+y)
+                if ((newx < w) & (newx >= 0)):
+                    if ((newy < h) & (newy >= 0)):
+                        #print("    looking at : ", [newx, newy])
+                        tmp = F[newy, newx]
+                        #print(tmp)
+                        if ((tmp[0] != 0) or (tmp[1] != 0) or (tmp[2] != 0)):
+                            #print("yes")
+                            visit = np.append(visit, [newx, newy])
+                            #visit = np.concatenate((visit, newx))
+                            #visit = np.concatenate((visit, newy))
+                            #visit = np.insert(visit, len(visit)-1, [newx, newy])
+                            #value = np.zeros_like(visit[0])
+                            #value[0] = newx
+                            #value[1] = newy
+                            #visit = np.vstack((visit, value))
+                            #print("ok !")
+        #print(visit)
+        idx = idx + 2
+        #print(idx)
+        if (len(visit) == idx*2):
+            done = True
+    print("Changed " + str(count) + " pixels")
+        
 
 
+    # TODO Implement A* type algorithm to retrieve all pixels in zones
+    # np.append (visited, [a,b])
 
 # Lines to cut in fragments
 def fragment_file(F, fragment_size):
