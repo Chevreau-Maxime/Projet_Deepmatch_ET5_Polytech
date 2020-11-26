@@ -29,6 +29,14 @@ def get_line_number(file_name):
             pass
     return i + 1
 
+
+def pair_filter(val_ligne):
+    thresh_score = 2.2
+    if (float(val_ligne[4]) < float(thresh_score)):
+        return False
+    return True
+
+
 def get_data_from_file(file_name):
     # Init np array
     valeurs = np.zeros((get_line_number(file_name), 6))
@@ -38,8 +46,11 @@ def get_data_from_file(file_name):
     # Store lines
     for line in Lines:
         val_ligne = line.split(" ")
-        for i in range(6):
-            valeurs[idx_ligne][i] = float(val_ligne[i])
+        if (pair_filter(val_ligne)):
+            for i in range(6):
+                valeurs[idx_ligne][i] = float(val_ligne[i])
+        else:
+            valeurs[idx_ligne][i] = (-1)
         idx_ligne += 1
     return valeurs
 

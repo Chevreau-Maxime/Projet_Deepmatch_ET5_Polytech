@@ -7,14 +7,22 @@ import __ransac_functions as r_f
 import __ransac_homography as r_h
 
 
-print("BEGIN TREATMENT")
+#print("BEGIN TREATMENT")
 #######################################################
 #  READ DATA FROM TXT FILE IN PARAM
 #######################################################
-print("READ DATA")
+#print("READ DATA")
 param1 = sys.argv[1] 
 #param1 = "resultats/1.txt"
 nb_paires = r_f.get_line_number(param1)
+"""
+if (nb_paires < 10):
+	print("nombre de paires insuffisant pour l'image ", param1)
+	quit()
+else:
+	quit()
+"""
+
 nb_infos = 6
 valeurs_txt = r_f.get_data_from_file(param1)
 #print("Paired points amount : " + str(nb_paires))
@@ -29,7 +37,6 @@ for i in range(nb_paires):
 	y1[i] = valeurs_txt[i][1]
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
-
 
 
 #######################################################
