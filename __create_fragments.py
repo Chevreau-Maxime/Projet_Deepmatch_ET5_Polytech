@@ -51,9 +51,18 @@ def save_single_fragment(F, startx, starty):
     visit = np.zeros((2))
     visit[0] = startx
     visit[1] = starty
+    saved = np.zeros((2))
+    saved[0] = startx
+    saved[1] = starty
+
     idx = 0
     count = 0
     done = False
+
+    while(not(done)):
+        return
+
+    """
     while(not(done)):
         ### Treat visit[idx]
         currentx = int(visit[idx + 0])
@@ -93,6 +102,7 @@ def save_single_fragment(F, startx, starty):
         #print("done ? ", idx, "/", len(visit))
         if (len(visit) <= idx):
             done = True
+    """
     print("Changed " + str(count) + " pixels")
     return
 

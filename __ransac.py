@@ -12,16 +12,17 @@ import __ransac_homography as r_h
 #  READ DATA FROM TXT FILE IN PARAM
 #######################################################
 #print("READ DATA")
-param1 = sys.argv[1] 
-#param1 = "resultats/1.txt"
+if (len(sys.argv) >= 1):
+	param1 = sys.argv[1]
+else:
+	param1 = "resultats2/1.txt"
 nb_paires = r_f.get_line_number(param1)
-"""
-if (nb_paires < 10):
-	print("nombre de paires insuffisant pour l'image ", param1)
+
+if (nb_paires < 20):
+	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
 	quit()
 else:
 	quit()
-"""
 
 nb_infos = 6
 valeurs_txt = r_f.get_data_from_file(param1)
