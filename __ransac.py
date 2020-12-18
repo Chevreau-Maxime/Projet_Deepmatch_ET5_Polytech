@@ -18,15 +18,20 @@ else:
 	param1 = "resultats2/1.txt"
 nb_paires = r_f.get_line_number(param1)
 
+"""
 if (nb_paires < 20):
 	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
 	quit()
 else:
 	quit()
+"""
 
 nb_infos = 6
 valeurs_txt = r_f.get_data_from_file(param1)
 #print("Paired points amount : " + str(nb_paires))
+#print(valeurs_txt)
+
+#valeurs_txt = r_f.filter_matches(valeurs_txt) #filter matches
 #print(valeurs_txt)
 
 x1 = np.zeros((nb_paires, 1))
@@ -70,7 +75,6 @@ y_data_ransac = tmp[2]
 print("CALCULATE RANSAC")
 H = r_f.execute_ransac(x1, x2, y1, y2)
 #print(H)
-
 
 print("COPY FRAGMENT")
 dx = 0

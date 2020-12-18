@@ -54,6 +54,14 @@ def get_data_from_file(file_name):
         idx_ligne += 1
     return valeurs
 
+def filter_matches(valeurs, filter_local_max_0 = 1, ):
+    index = []
+    for i in range(len(valeurs)):
+        if (valeurs[i][5] == 0):
+            index.append(i)
+    newValeurs = np.delete(valeurs, index)
+    return newValeurs
+
 def get_frag_name(txt_name):
     tmp = (txt_name.split('/'))[1]
     tmp = (tmp.split('.'))[0]
