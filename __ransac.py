@@ -10,12 +10,15 @@ import __ransac_homography as r_h
 #######################################################
 #  READ DATA FROM TXT FILE IN PARAM
 #######################################################
+
 if (len(sys.argv) >= 2):
 	param1 = sys.argv[1]
 else:
 	param1 = "resultats3/1.txt"
 nb_paires = r_f.get_line_number(param1)
 
+print("\n--- Fragment "+str(param1)+" ---")
+print("- Extraction...", end="")
 """
 if (nb_paires < 20):
 	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
@@ -41,8 +44,7 @@ for i in range(nb_paires):
 	y1[i] = valeurs_txt[i][1]
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
-
-
+print("ok")
 #######################################################
 #  METHOD 1 : HOMOGRAPHY
 ####################################################### 
@@ -70,8 +72,15 @@ y_data_ransac = tmp[2]
 #######################################################
 #  METHOD 2 : RANSAC
 #######################################################
-print("CALCULATE RANSAC")
-H = r_f.execute_ransac(x1, x2, y1, y2)
+print("- Calculate Ransac...", end="")
+useOpenCV = True
+if (useOpenCV):
+	H = r_f.execute_openCV_ransac(x1, x2, y1, y2, False)
+else:
+	H = r_f.execute_ransac(x1, x2, y1, y2)
+print("ok")
+
+"""
 print(H.coef_)
 avg_diag1 = (H.coef_[0,0] + H.coef_[1,1]) / 2
 avg_diag2 = (abs(H.coef_[0,1]) + abs(H.coef_[1,0])) / 2
@@ -90,21 +99,20 @@ print("New H : ")
 print(H.coef_)
 print("------------------------------------------------------")
 print(H.intercept_)
+"""
 
-
-
-#print(H)
-
-print("COPY FRAGMENT")
-dx = 0
-dy = 0
-da = 0
-# COPY FRAGMENT INTO
+print("- Copying Image...", end="")
 frag_ppm = r_f.get_frag_name(param1)
 frag_png = "images/frag_tmp.png"
 r_f.convert_image(frag_ppm, frag_png)
-r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", dx, dy, da, H)
-r_f.copy_image_into_image(frag_png, "images/fresque_empty.png", dx, dy, da, H)
+
+if (useOpenCV):
+	r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_copy.png", H)
+	r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_empty.png", H)
+
+else:
+	r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", 0,0,0, H)
+	r_f.copy_image_into_image(frag_png, "images/fresque_empty.png",0,0,0, H)
 
 # DISPLAY RANSAC PAIRS
 #plt.subplot(121)

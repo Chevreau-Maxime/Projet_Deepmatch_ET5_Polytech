@@ -5,7 +5,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from sklearn import linear_model, metrics
-#import cv2 as cv
+import cv2 as cv
 
 """
 def homography(x1, x2, y1, y2):
@@ -50,7 +50,8 @@ def get_data_from_file(file_name):
             for i in range(6):
                 valeurs[idx_ligne][i] = float(val_ligne[i])
         else:
-            valeurs[idx_ligne][i] = (-1)
+            for i in range(6):
+                valeurs[idx_ligne][i] = (-1)
         idx_ligne += 1
     return valeurs
 
@@ -70,6 +71,27 @@ def get_frag_name(txt_name):
     #print(tmp)
     return tmp
 
+def execute_openCV_ransac(x1, x2, y1, y2, printIt=False):
+    # Extract
+    frag_points  = np.empty((len(x1), 2))
+    fresq_points = np.empty_like(frag_points)
+    for i in range(len(x1)):
+        frag_points[i, 0] = x1[i]
+        frag_points[i, 1] = y1[i]
+        fresq_points[i, 0] = x2[i]
+        fresq_points[i, 1] = y2[i]
+
+    h, mask = cv.findHomography(frag_points,fresq_points,cv.RANSAC)
+    #print(h)
+    # Print it
+    if(printIt):
+        yesPoints = fresq_points[np.transpose(mask),:]
+        outPoints = fresq_points[np.logical_not(np.transpose(mask)),:]
+        plt.scatter(yesPoints[:,0], yesPoints[:,1], marker='+',c='g', linewidths=0)
+        plt.scatter(outPoints[:,0], outPoints[:,1], marker='.',c='r',linewidths=0)
+        plt.show()
+    return h
+
 def execute_ransac(x1, x2, y1, y2, printIt=False):
     # Extract
     frag_points  = np.empty((len(x1), 2))
@@ -81,11 +103,9 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         fresq_points[i, 1] = y2[i]
     # Ransac
     sample = np.ones((len(x1)))
-    print("------------------------------------------------------")
     ransac = linear_model.RANSACRegressor(None, 5, None, None, None, 250, np.inf, np.inf, np.inf, 1, 'absolute_loss')
-    print("------------------------------------------------------")
     ransac.fit(frag_points, fresq_points, sample)
-    print("------------------------------------------------------")
+
     # Print it
     if(printIt):
         yesPoints = fresq_points[ransac.inlier_mask_,:]
@@ -94,6 +114,49 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         plt.scatter(outPoints[:,0], outPoints[:,1], marker='.',c='r',linewidths=0)
         plt.show()
     return ransac.estimator_
+
+def copy_image_into_image_OpenCV(frag, fresque, H):
+    ##### INIT
+    img_frag = np.asarray(Image.open(frag))
+    img_fresque = np.asarray(Image.open(fresque))
+    img_fresque2 = img_fresque.copy()
+
+    ##### MODIFY
+    hf, wf = dimensions(img_fresque2)
+    h,w = dimensions(img_frag)
+    for i in range(w):
+        progress_bar(i/w, 'Copying image', 0)
+        for j in range(h):
+            # Calc new point
+            a = [[int(i)],[int(j)],[1]]
+            fresque_pix = np.dot(H,a)
+            # Round and apply
+            newx = int(round(abs(fresque_pix[0,0])))
+            newy = int(round(abs(fresque_pix[1,0])))
+            #print([newx, newy])
+            r = (img_frag[j, i, 0])
+            g = (img_frag[j, i, 1])
+            b = (img_frag[j, i, 2])
+            if (not((r == 0) & (g == 0) & (b == 0))):
+                #if (i%20 == 0):
+                    #print("replacing pixel :")
+                    #print(img_fresque2[newy+dy, newx+dx])
+                    #print("by -> ", [r,g,b])
+                if((newy < hf) & (newx < wf)):
+                    if((newy >= 0) & (newx >= 0)):
+                        img_fresque2[newy, newx] = [r,g,b]
+                #np_fresque[newy+dy, newx+dx] = [r,g,b]
+                #print("replacing pixel at ", newy+dy, ", ", newx+dx)
+                #print([r,g,b])
+    
+    ##### SAVE
+    plt.imshow(img_fresque2)
+    plt.savefig("images/fresque_new.png")
+    print("Saving image : " + fresque)
+    img = Image.fromarray(np.uint8(img_fresque2))
+    img.save(fresque)
+    #print("done save.")
+    return
 
 def copy_image_into_image(frag, fresque, dx, dy, da, H):
     ##### INIT
@@ -105,7 +168,7 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
     hf, wf = dimensions(img_fresque2)
     h,w = dimensions(img_frag)
     for i in range(w):
-        progress_bar(i/w, 'Copying image')
+        progress_bar(i/w, 'Copying image', 0)
         for j in range(h):
             point = np.empty((1,2))
             point[0,0] = i
@@ -175,7 +238,8 @@ def pixel_set(image, x, y, r=1, g=1, b=1):
         return False
 
 
-""" OLD
+"""
+
 def filtre_sur_fresque(image, r, g, b):
     h,w = dimensions(image)
     for i in range(w):
@@ -193,8 +257,7 @@ def do_ransac_on_data(x1, x2):
     x1_ransac = np.arange(x1.min(), x1.max())[:, np.newaxis]
     x2_ransac = ransac.predict(x1_ransac)
     return x1_ransac, x2_ransac, ransac
-"""
-"""
+
 def print_ransac(x1, x2, x1_ransac, x2_ransac, ransac):
     # Create Masks 
     inlier_mask = ransac.inlier_mask_
