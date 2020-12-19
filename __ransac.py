@@ -7,15 +7,13 @@ import __ransac_functions as r_f
 import __ransac_homography as r_h
 
 
-#print("BEGIN TREATMENT")
 #######################################################
 #  READ DATA FROM TXT FILE IN PARAM
 #######################################################
-#print("READ DATA")
-if (len(sys.argv) >= 1):
+if (len(sys.argv) >= 2):
 	param1 = sys.argv[1]
 else:
-	param1 = "resultats2/1.txt"
+	param1 = "resultats3/1.txt"
 nb_paires = r_f.get_line_number(param1)
 
 """
@@ -74,6 +72,27 @@ y_data_ransac = tmp[2]
 #######################################################
 print("CALCULATE RANSAC")
 H = r_f.execute_ransac(x1, x2, y1, y2)
+print(H.coef_)
+avg_diag1 = (H.coef_[0,0] + H.coef_[1,1]) / 2
+avg_diag2 = (abs(H.coef_[0,1]) + abs(H.coef_[1,0])) / 2
+print("diag 1 : " + str(avg_diag1))
+print("diag 2 : " + str(avg_diag2))
+
+H.coef_[0,0] = H.coef_[1,1] = avg_diag1
+if (H.coef_[0,1] < 0):
+	H.coef_[0,1] = -avg_diag2
+	H.coef_[1,0] = avg_diag2
+else:
+	H.coef_[0,1] = avg_diag2
+	H.coef_[1,0] = -avg_diag2
+
+print("New H : ")
+print(H.coef_)
+print("------------------------------------------------------")
+print(H.intercept_)
+
+
+
 #print(H)
 
 print("COPY FRAGMENT")
@@ -95,13 +114,7 @@ r_f.copy_image_into_image(frag_png, "images/fresque_empty.png", dx, dy, da, H)
 #plt.show()
 
 
-
-
-
-
 """ OLD CODE
-
-
 n_samples = 50
 n_outliers = 5
 X, y, coef = datasets.make_regression(n_samples=n_samples, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
