@@ -1,4 +1,4 @@
-from math import asin, acos
+from math import asin, acos, cos, sin, pi
 import numpy as np
 import array as arr
 from PIL import Image
@@ -31,29 +31,39 @@ def get_line_number(file_name):
 
 
 def pair_filter(val_ligne):
+    result = True
     thresh_score = 2.2
     if (float(val_ligne[4]) < float(thresh_score)):
-        return False
-    return True
+        result = False
+    if (int(val_ligne[5]) == 0):
+        result = False
+    #print(val_ligne)
+    #print(result)
+    return result
 
 
 def get_data_from_file(file_name):
-    # Init np array
-    valeurs = np.zeros((get_line_number(file_name), 6))
-    idx_ligne = 0
+    # Init
+    #nb_total = get_line_number(file_name)
+    nb_valid = 0
     f = open(file_name, "r")
     Lines = f.readlines()
-    # Store lines
+    idx_ligne = 0
+    # Get number of valid pairs
+    for line in Lines:
+        val_ligne = line.split(" ")
+        if (pair_filter(val_ligne)):
+            nb_valid += 1
+    # Store valid pairs
+    valeurs = np.zeros((nb_valid, 6))
     for line in Lines:
         val_ligne = line.split(" ")
         if (pair_filter(val_ligne)):
             for i in range(6):
                 valeurs[idx_ligne][i] = float(val_ligne[i])
-        else:
-            for i in range(6):
-                valeurs[idx_ligne][i] = (-1)
-        idx_ligne += 1
-    return valeurs
+            idx_ligne += 1  
+        
+    return valeurs, nb_valid
 
 def filter_matches(valeurs, filter_local_max_0 = 1, ):
     index = []
@@ -114,6 +124,67 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         plt.scatter(outPoints[:,0], outPoints[:,1], marker='.',c='r',linewidths=0)
         plt.show()
     return ransac.estimator_
+
+def getDaDxDyFromH(H):
+    dx = H[0,2]
+    dy = H[1,2]
+    da1 = acos(max(min(H[0,0], 1), -1))
+    da2 = acos(max(min(H[1,1], 1), -1))
+    da3 = asin(max(min(H[0,1], 1), -1))
+    da4 = asin(max(min(-H[1,0], 1), -1))
+    angles = [da1-(pi/2), da2-(pi/2), da3, da4]
+    da = sum(angles)/4
+    
+    print("dx / dy : " + str(dx) + " / " +str(dy))
+    print("da1 : " + str(da1))
+    print("da2 : " + str(da2))
+    print("da3 : " + str(da3))
+    print("da4 : " + str(da4))
+    print("avg da : " + str(da))
+    return dx, dy, da
+
+def copy_image_into_image_Transform(frag, fresque, dx, dy, da):
+    ##### INIT
+    img_frag = np.asarray(Image.open(frag))
+    img_fresque = np.asarray(Image.open(fresque))
+    img_fresque2 = img_fresque.copy()
+
+    ##### MODIFY
+    hf, wf = dimensions(img_fresque2)
+    h,w = dimensions(img_frag)
+    for i in range(w):
+        progress_bar(i/w, 'Copying image', 0)
+        for j in range(h):
+            # Calc new point
+            a = [[int(i)],[int(j)],[1]]
+            H = [[cos(da), sin(da), dx],[-sin(da), cos(da), dy],[0,0,1]]
+            fresque_pix = np.dot(H,a)
+            # Round and apply
+            newx = int(round(abs(fresque_pix[0,0])))
+            newy = int(round(abs(fresque_pix[1,0])))
+            #print([newx, newy])
+            r = (img_frag[j, i, 0])
+            g = (img_frag[j, i, 1])
+            b = (img_frag[j, i, 2])
+            if (not((r == 0) & (g == 0) & (b == 0))):
+                #if (i%20 == 0):
+                    #print("replacing pixel :")
+                    #print(img_fresque2[newy+dy, newx+dx])
+                    #print("by -> ", [r,g,b])
+                if((newy < hf) & (newx < wf)):
+                    if((newy >= 0) & (newx >= 0)):
+                        img_fresque2[newy, newx] = [r,g,b]
+                #np_fresque[newy+dy, newx+dx] = [r,g,b]
+                #print("replacing pixel at ", newy+dy, ", ", newx+dx)
+                #print([r,g,b])
+    
+    ##### SAVE
+    plt.imshow(img_fresque2)
+    plt.savefig("images/fresque_new.png")
+    print("Saving image : " + fresque)
+    img = Image.fromarray(np.uint8(img_fresque2))
+    img.save(fresque)
+    return
 
 def copy_image_into_image_OpenCV(frag, fresque, H):
     ##### INIT

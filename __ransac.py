@@ -15,10 +15,10 @@ if (len(sys.argv) >= 2):
 	param1 = sys.argv[1]
 else:
 	param1 = "resultats3/1.txt"
-nb_paires = r_f.get_line_number(param1)
+
 
 print("\n--- Fragment "+str(param1)+" ---")
-print("- Extraction...", end="")
+print("- Extraction...")
 """
 if (nb_paires < 20):
 	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
@@ -26,10 +26,11 @@ if (nb_paires < 20):
 else:
 	quit()
 """
+nb_total = r_f.get_line_number(param1)
+valeurs_txt, nb_paires = r_f.get_data_from_file(param1)
 
-nb_infos = 6
-valeurs_txt = r_f.get_data_from_file(param1)
-#print("Paired points amount : " + str(nb_paires))
+
+print("valid pairs : " + str(nb_paires) + " / " + str(nb_total))
 #print(valeurs_txt)
 
 #valeurs_txt = r_f.filter_matches(valeurs_txt) #filter matches
@@ -44,7 +45,7 @@ for i in range(nb_paires):
 	y1[i] = valeurs_txt[i][1]
 	x2[i] = valeurs_txt[i][2]
 	y2[i] = valeurs_txt[i][3]
-print("ok")
+
 #######################################################
 #  METHOD 1 : HOMOGRAPHY
 ####################################################### 
@@ -72,7 +73,7 @@ y_data_ransac = tmp[2]
 #######################################################
 #  METHOD 2 : RANSAC
 #######################################################
-print("- Calculate Ransac...", end="")
+print("- Calculate Ransac...")
 useOpenCV = True
 if (useOpenCV):
 	H = r_f.execute_openCV_ransac(x1, x2, y1, y2, False)
@@ -101,19 +102,21 @@ print("------------------------------------------------------")
 print(H.intercept_)
 """
 
-print("- Copying Image...", end="")
+print("- Copying Image...")
 frag_ppm = r_f.get_frag_name(param1)
 frag_png = "images/frag_tmp.png"
 r_f.convert_image(frag_ppm, frag_png)
-
+print(H)
+dx,dy,da = r_f.getDaDxDyFromH(H)
 if (useOpenCV):
-	r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_copy.png", H)
-	r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_empty.png", H)
+	r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty.png", dx, dy, da)
+	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_copy.png", H)
+	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_empty.png", H)
 
 else:
-	r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", 0,0,0, H)
+	#r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", 0,0,0, H)
 	r_f.copy_image_into_image(frag_png, "images/fresque_empty.png",0,0,0, H)
-
+print("ok")
 # DISPLAY RANSAC PAIRS
 #plt.subplot(121)
 #r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)
