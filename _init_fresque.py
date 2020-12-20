@@ -25,6 +25,7 @@ for i in range(w):
 # Save as normal image
 img = Image.fromarray(fresque, 'RGB')
 img.save('images/fresque_empty.png')
+img.save('images/fresque_empty_fantomes.png')
 #img.show()
 img = Image.fromarray(fresque_base, 'RGB')
 img.save('images/fresque_copy.png')

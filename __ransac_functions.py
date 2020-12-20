@@ -1,4 +1,4 @@
-from math import asin, acos, cos, sin, pi
+from math import asin, acos, cos, sin, pi, atan2
 import numpy as np
 import array as arr
 from PIL import Image
@@ -32,7 +32,7 @@ def get_line_number(file_name):
 
 def pair_filter(val_ligne):
     result = True
-    thresh_score = 2.2
+    thresh_score = 1.5
     if (float(val_ligne[4]) < float(thresh_score)):
         result = False
     if (int(val_ligne[5]) == 0):
@@ -125,23 +125,39 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         plt.show()
     return ransac.estimator_
 
-def getDaDxDyFromH(H):
+def getDaDxDyFromH(H, thresh=np.inf, verbose=False):
+    # Translation
     dx = H[0,2]
     dy = H[1,2]
+    # Rotation
+    # Matrice de la forme 
+    # [[a,-b], 
+    #  [b, a]]
     da1 = acos(max(min(H[0,0], 1), -1))
     da2 = acos(max(min(H[1,1], 1), -1))
     da3 = asin(max(min(H[0,1], 1), -1))
     da4 = asin(max(min(-H[1,0], 1), -1))
-    angles = [da1-(pi/2), da2-(pi/2), da3, da4]
+    tang = atan2(H[0,0], H[1,0])
+    offset = -pi
+    if (tang > 0):
+        offset = -(pi/2)
+    angles = [da1+offset, da2+offset, da3, da4]
     da = sum(angles)/4
+    # Goodmatch
+    goodmatch = True
+    if ((abs(da1-da2) > thresh) or (abs(da3-da4) > thresh)):
+        goodmatch = False
     
-    print("dx / dy : " + str(dx) + " / " +str(dy))
-    print("da1 : " + str(da1))
-    print("da2 : " + str(da2))
-    print("da3 : " + str(da3))
-    print("da4 : " + str(da4))
-    print("avg da : " + str(da))
-    return dx, dy, da
+    if (verbose):
+        print(angles)
+        print(tang)
+        print("dx / dy : " + str(dx) + " / " +str(dy))
+        print("a : " + str(da1))
+        print("d : " + str(da2))
+        print("b : " + str(da3))
+        print("c : " + str(da4))
+        print("avg da : " + str(da))
+    return dx, dy, da, goodmatch
 
 def copy_image_into_image_Transform(frag, fresque, dx, dy, da):
     ##### INIT

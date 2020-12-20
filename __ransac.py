@@ -107,9 +107,12 @@ frag_ppm = r_f.get_frag_name(param1)
 frag_png = "images/frag_tmp.png"
 r_f.convert_image(frag_ppm, frag_png)
 print(H)
-dx,dy,da = r_f.getDaDxDyFromH(H)
+dx,dy,da,goodmatch = r_f.getDaDxDyFromH(H, 0.25)
 if (useOpenCV):
-	r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty.png", dx, dy, da)
+	if (goodmatch):
+		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty.png", dx, dy, da)
+	else:
+		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty_fantomes.png", dx, dy, da)
 	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_copy.png", H)
 	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_empty.png", H)
 
