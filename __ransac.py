@@ -111,15 +111,16 @@ dx,dy,da,goodmatch = r_f.getDaDxDyFromH(H, 0.25)
 if (useOpenCV):
 	if (goodmatch):
 		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty.png", dx, dy, da)
+		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty_fantomes.png", dx, dy, da)
 	else:
 		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty_fantomes.png", dx, dy, da)
-	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_copy.png", H)
-	#r_f.copy_image_into_image_OpenCV(frag_png, "images/fresque_empty.png", H)
 
 else:
 	#r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", 0,0,0, H)
 	r_f.copy_image_into_image(frag_png, "images/fresque_empty.png",0,0,0, H)
 print("ok")
+
+
 # DISPLAY RANSAC PAIRS
 #plt.subplot(121)
 #r_f.print_ransac(x1, x2, x1_ransac, x2_ransac, x_data_ransac)

@@ -143,6 +143,8 @@ def getDaDxDyFromH(H, thresh=np.inf, verbose=False):
         offset = -(pi/2)
     angles = [da1+offset, da2+offset, da3, da4]
     da = sum(angles)/4
+
+
     # Goodmatch
     goodmatch = True
     if ((abs(da1-da2) > thresh) or (abs(da3-da4) > thresh)):
@@ -173,7 +175,8 @@ def copy_image_into_image_Transform(frag, fresque, dx, dy, da):
         for j in range(h):
             # Calc new point
             a = [[int(i)],[int(j)],[1]]
-            H = [[cos(da), sin(da), dx],[-sin(da), cos(da), dy],[0,0,1]]
+            H = [[-cos(da), sin(da), dx],[-sin(da), -cos(da), dy],[0,0,1]]
+            #H = [[cos(da), sin(da), dx],[-sin(da), cos(da), dy],[0,0,1]]
             fresque_pix = np.dot(H,a)
             # Round and apply
             newx = int(round(abs(fresque_pix[0,0])))
