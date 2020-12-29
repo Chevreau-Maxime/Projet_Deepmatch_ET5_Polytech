@@ -31,10 +31,6 @@ valeurs_txt, nb_paires = r_f.get_data_from_file(param1)
 
 
 print("valid pairs : " + str(nb_paires) + " / " + str(nb_total))
-#print(valeurs_txt)
-
-#valeurs_txt = r_f.filter_matches(valeurs_txt) #filter matches
-#print(valeurs_txt)
 
 x1 = np.zeros((nb_paires, 1))
 y1 = np.zeros((nb_paires, 1))
@@ -74,7 +70,7 @@ y_data_ransac = tmp[2]
 #  METHOD 2 : RANSAC
 #######################################################
 print("- Calculate Ransac...")
-useOpenCV = True
+useOpenCV = False
 if (useOpenCV):
 	H = r_f.execute_openCV_ransac(x1, x2, y1, y2, False)
 else:
@@ -106,18 +102,18 @@ print("- Copying Image...")
 frag_ppm = r_f.get_frag_name(param1)
 frag_png = "images/frag_tmp.png"
 r_f.convert_image(frag_ppm, frag_png)
-print(H)
-dx,dy,da,goodmatch = r_f.getDaDxDyFromH(H, 0.25)
 if (useOpenCV):
+	dx,dy,da,goodmatch = r_f.getDaDxDyFromH(H, 0.25, False)
 	if (goodmatch):
 		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty.png", dx, dy, da)
 		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty_fantomes.png", dx, dy, da)
 	else:
 		r_f.copy_image_into_image_Transform(frag_png, "images/fresque_empty_fantomes.png", dx, dy, da)
-
 else:
-	#r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", 0,0,0, H)
-	r_f.copy_image_into_image(frag_png, "images/fresque_empty.png",0,0,0, H)
+	r_f.rectify_H_Regressor(H)
+	r_f.copy_image_into_image(frag_png, "images/fresque_copy.png", H)
+
+	#r_f.copy_image_into_image(frag_png, "images/fresque_empty.png",0,0,0, H)
 print("ok")
 
 

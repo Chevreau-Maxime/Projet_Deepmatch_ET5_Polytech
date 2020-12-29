@@ -113,7 +113,7 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         fresq_points[i, 1] = y2[i]
     # Ransac
     sample = np.ones((len(x1)))
-    ransac = linear_model.RANSACRegressor(None, 5, None, None, None, 250, np.inf, np.inf, np.inf, 1, 'absolute_loss')
+    ransac = linear_model.RANSACRegressor()#None, 5, None, None, None, 250, np.inf, np.inf, np.inf, 1, 'absolute_loss')
     ransac.fit(frag_points, fresq_points, sample)
 
     # Print it
@@ -138,12 +138,21 @@ def getDaDxDyFromH(H, thresh=np.inf, verbose=False):
     da3 = asin(max(min(H[0,1], 1), -1))
     da4 = asin(max(min(-H[1,0], 1), -1))
     tang = atan2(H[0,0], H[1,0])
+    avg_cos = (da1+da2)/2
+    avg_sin = (da3+da4)/2
+
+
     offset = -pi
     if (tang > 0):
         offset = -(pi/2)
+    angles_base = [da1, da2, da3, da4]
     angles = [da1+offset, da2+offset, da3, da4]
     da = sum(angles)/4
 
+    if (tang > 0):
+        da = max(avg_cos, avg_sin)
+    else :
+        da = min(avg_cos, avg_sin)
 
     # Goodmatch
     goodmatch = True
@@ -151,14 +160,14 @@ def getDaDxDyFromH(H, thresh=np.inf, verbose=False):
         goodmatch = False
     
     if (verbose):
-        print(angles)
-        print(tang)
+        print("Verbose Mode :\nMatrix 3x3 H :\n", H)
+        print("Rotation angles   (no offset):\n", angles_base)
+        print("Rotation angles (with offset):\n", angles)    
+        print("Tan angle : ", tang)
+        print("Avg acos : ", avg_cos)
+        print("Avg asin : ", avg_sin)
         print("dx / dy : " + str(dx) + " / " +str(dy))
-        print("a : " + str(da1))
-        print("d : " + str(da2))
-        print("b : " + str(da3))
-        print("c : " + str(da4))
-        print("avg da : " + str(da))
+        print("result da : " + str(da))
     return dx, dy, da, goodmatch
 
 def copy_image_into_image_Transform(frag, fresque, dx, dy, da):
@@ -198,8 +207,6 @@ def copy_image_into_image_Transform(frag, fresque, dx, dy, da):
                 #print([r,g,b])
     
     ##### SAVE
-    plt.imshow(img_fresque2)
-    plt.savefig("images/fresque_new.png")
     print("Saving image : " + fresque)
     img = Image.fromarray(np.uint8(img_fresque2))
     img.save(fresque)
@@ -240,18 +247,16 @@ def copy_image_into_image_OpenCV(frag, fresque, H):
                 #print([r,g,b])
     
     ##### SAVE
-    plt.imshow(img_fresque2)
-    plt.savefig("images/fresque_new.png")
     print("Saving image : " + fresque)
     img = Image.fromarray(np.uint8(img_fresque2))
     img.save(fresque)
     #print("done save.")
     return
 
-def copy_image_into_image(frag, fresque, dx, dy, da, H):
+def copy_image_into_image(frag, source, H, destination=0):
     ##### INIT
     img_frag = np.asarray(Image.open(frag))
-    img_fresque = np.asarray(Image.open(fresque))
+    img_fresque = np.asarray(Image.open(source))
     img_fresque2 = img_fresque.copy()
 
     ##### MODIFY
@@ -271,24 +276,44 @@ def copy_image_into_image(frag, fresque, dx, dy, da, H):
             g = (img_frag[j, i, 1])
             b = (img_frag[j, i, 2])
             if (not((r == 0) & (g == 0) & (b == 0))):
-                #if (i%20 == 0):
-                    #print("replacing pixel :")
-                    #print(img_fresque2[newy+dy, newx+dx])
-                    #print("by -> ", [r,g,b])
-                if((newy+dy < hf) & (newx+dx < wf)):
-                    img_fresque2[newy+dy, newx+dx] = [r,g,b]
-                #np_fresque[newy+dy, newx+dx] = [r,g,b]
-                #print("replacing pixel at ", newy+dy, ", ", newx+dx)
-                #print([r,g,b])
-    
+                if((newy < hf) & (newx < wf)):
+                    img_fresque2[newy, newx] = [r,g,b]
+
     ##### SAVE
-    plt.imshow(img_fresque2)
-    plt.savefig("images/fresque_new.png")
-    print("Saving image : " + fresque)
     img = Image.fromarray(np.uint8(img_fresque2))
-    img.save(fresque)
-    #print("done save.")
+    if (destination == 0):
+        img.save(source)
+    else:
+        img.save(destination)
     return
+
+def rectify_H_Regressor(H, verbose=False):
+    # Extract info
+    Mat_rotation = H.coef_
+    Mat_translation = H.intercept_
+    Ang_acos1 = acos(max(min(Mat_rotation[0,0], 1), -1))
+    Ang_acos2 = acos(max(min(Mat_rotation[1,1], 1), -1))
+    Ang_asin1 = asin(max(min(-Mat_rotation[0,1], 1), -1))
+    Ang_asin2 = asin(max(min(Mat_rotation[1,0], 1), -1))
+    if (verbose):
+        print(Mat_rotation)
+        print(Mat_translation)
+        print("Acos : ", Ang_acos1, ", ", Ang_acos2)
+        print("Asin : ", Ang_asin1, ", ", Ang_asin2)
+
+    # Calculate right angle
+    angle = Ang_acos1
+    if (angle == 0):
+        goodmatch = False
+    else:
+        goodmatch = True
+
+    # Redo Matrix
+    H.coef_[0,0] = cos(angle)
+    H.coef_[1,1] = cos(angle)
+    H.coef_[0,1] = -sin(angle)
+    H.coef_[1,0] = sin(angle)
+    return goodmatch
 
 def convert_image(source, destination):
     # Get Image

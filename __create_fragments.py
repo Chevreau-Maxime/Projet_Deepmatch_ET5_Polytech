@@ -45,21 +45,31 @@ def save_fragments(F, folder):
             save_single_fragment(F, start[0], start[1])
             done = True #DELETE THIS LINE LATER
     return F
+
+
+def checkSinglePixel():
+    return
        
 def save_single_fragment(F, startx, starty):
     h,w = dimensions(F)
+    nb_visited = 1
+    idx_visited = 0
+    saved = np.zeros((2))
     visit = np.zeros((2))
+    
     visit[0] = startx
     visit[1] = starty
-    saved = np.zeros((2))
     saved[0] = startx
     saved[1] = starty
 
-    idx = 0
-    count = 0
     done = False
 
     while(not(done)):
+        done = True
+        x = int(visit[idx_visited + 0])
+        y = int(visit[idx_visited + 1])
+        
+
         return
 
     """

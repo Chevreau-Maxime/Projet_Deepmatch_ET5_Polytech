@@ -17,7 +17,10 @@ w = int(fresque[0].size / 3)
 h = int(fresque.size / (3 * w))    
 for i in range(w):
     for j in range(h):
-        fresque[j, i] = [0,0,0]
+        fresque[j, i]       = [0,0,0]
+        rgb = [0,0,0]
+        rgb = fresque_base[j,i]
+        fresque_base[j, i]  = rgb/5 
 
 #plt.imshow(fresque_base)
 #fresque_base.save("images/fresque_empty.png")
