@@ -19,18 +19,16 @@ else:
 
 print("\n--- Fragment "+str(param1)+" ---")
 print("- Extraction...")
-"""
-if (nb_paires < 20):
-	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
-	quit()
-else:
-	quit()
-"""
+
 nb_total = r_f.get_line_number(param1)
 valeurs_txt, nb_paires = r_f.get_data_from_file(param1)
 
-
 print("valid pairs : " + str(nb_paires) + " / " + str(nb_total))
+
+
+if (nb_paires < 60):
+	print("Paires insuffisantes ("+str(nb_paires)+") pour l'image ", param1)
+	quit()
 
 x1 = np.zeros((nb_paires, 1))
 y1 = np.zeros((nb_paires, 1))
@@ -74,7 +72,7 @@ useOpenCV = False
 if (useOpenCV):
 	H = r_f.execute_openCV_ransac(x1, x2, y1, y2, False)
 else:
-	H = r_f.execute_ransac(x1, x2, y1, y2)
+	H = r_f.execute_ransac(x1, x2, y1, y2, False)
 print("ok")
 
 """

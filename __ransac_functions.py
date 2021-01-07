@@ -4,7 +4,7 @@ import array as arr
 from PIL import Image
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
-from sklearn import linear_model, metrics
+from sklearn import linear_model, metrics, multioutput
 import cv2 as cv
 
 """
@@ -113,7 +113,9 @@ def execute_ransac(x1, x2, y1, y2, printIt=False):
         fresq_points[i, 1] = y2[i]
     # Ransac
     sample = np.ones((len(x1)))
+    base_estim = linear_model.LinearRegression()
     ransac = linear_model.RANSACRegressor()#None, 5, None, None, None, 250, np.inf, np.inf, np.inf, 1, 'absolute_loss')
+    #ransac = multioutput.MultiOutputRegressor(linear_model.Ridge(random_state=123))
     ransac.fit(frag_points, fresq_points, sample)
 
     # Print it
@@ -258,6 +260,8 @@ def copy_image_into_image(frag, source, H, destination=0):
     img_frag = np.asarray(Image.open(frag))
     img_fresque = np.asarray(Image.open(source))
     img_fresque2 = img_fresque.copy()
+    point = np.empty((1,2))
+    point2 = np.empty_like(point)
 
     ##### MODIFY
     hf, wf = dimensions(img_fresque2)
@@ -265,10 +269,8 @@ def copy_image_into_image(frag, source, H, destination=0):
     for i in range(w):
         progress_bar(i/w, 'Copying image', 0)
         for j in range(h):
-            point = np.empty((1,2))
             point[0,0] = i
             point[0,1] = j
-            point2 = np.empty_like(point)
             point2 = H.predict(point)
             newx = int(round(point2[0,0])) #int((H2[0,0]*i + H2[0,1]*j)) #+H2[0,2]
             newy = int(round(point2[0,1])) #int((H2[1,0]*i + H2[1,1]*j)) #+H2[1,2]

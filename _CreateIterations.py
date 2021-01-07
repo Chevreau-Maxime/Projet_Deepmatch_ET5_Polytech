@@ -33,10 +33,11 @@ for index in range(1, 315):
     frag_ppm = r_f.get_frag_name(txtname)
     frag_png = "images/frag_tmp.png"
     r_f.convert_image(frag_ppm, frag_png)
+    
     goodmatch = r_f.rectify_H_Regressor(H) # to hopefully correct scattered fragments...
-    if(goodmatch):
-        r_f.copy_image_into_image(frag_png, lastsource, H, nextsource)
+    print("goodmatch ? ", goodmatch)
+    r_f.copy_image_into_image(frag_png, lastsource, H, nextsource)
     lastsource = nextsource
 
-    print("\nok.")
+    
     
