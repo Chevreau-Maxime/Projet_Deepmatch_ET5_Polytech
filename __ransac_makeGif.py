@@ -4,7 +4,6 @@ import array as arr
 from matplotlib import pyplot as plt
 from sklearn import linear_model, datasets
 import __ransac_functions as r_f
-import __ransac_homography as r_h
 
 lastsource = "images/fresque_copy.png"
 for index in range(1, 315):
@@ -38,6 +37,3 @@ for index in range(1, 315):
     print("goodmatch ? ", goodmatch)
     r_f.copy_image_into_image(frag_png, lastsource, H, nextsource)
     lastsource = nextsource
-
-    
-    

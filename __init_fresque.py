@@ -14,23 +14,22 @@ fresque = fresque[:,:,:3].copy()
 fresque_base = fresque.copy()
 
 w = int(fresque[0].size / 3)
-h = int(fresque.size / (3 * w))    
+h = int(fresque.size / (3 * w))
 for i in range(w):
     for j in range(h):
-        fresque[j, i]       = [0,0,0]
-        rgb = [0,0,0]
+        #fresque[j, i]       = [0,0,0]
+        #rgb = [0,0,0]
         rgb = fresque_base[j,i]
-        fresque_base[j, i]  = rgb/5 
+        fresque_base[j, i]  = rgb/4
 
 #plt.imshow(fresque_base)
 #fresque_base.save("images/fresque_empty.png")
 
 # Save as normal image
-img = Image.fromarray(fresque, 'RGB')
-img.save('images/fresque_empty.png')
-img.save('images/fresque_empty_fantomes.png')
-#img.show()
 img = Image.fromarray(fresque_base, 'RGB')
+img.save('images/fresque_empty.png')
+#img.show()
+img = Image.fromarray(fresque, 'RGB')
 img.save('images/fresque_copy.png')
 print("End Initialization")
 
